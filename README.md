@@ -1,13 +1,15 @@
 # Stellar Core Docker Image
 
 This docker image does:
-- upload `stellar-core.cfg` form URL specified at time the container lounch time 
+- upload `stellar-core.cfg` from URL specified at the container launch time
+- and run Stellar core node process
 - have no database engine onboard (database credentials must be specified in the `stellar-core.cfg`)
 - put history archives to Google Storage
 
 The image uses the following software:
 
 - [stellar-core](https://github.com/stellar/stellar-core)
+- Google Cloud SDK
 - Supervisord is used from managing the processes of the services above.
 
 ## Usage
