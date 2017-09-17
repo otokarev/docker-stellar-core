@@ -1,6 +1,17 @@
+#!/usr/bin/env bash
+
 # dependencies
+
 apt-get update
-apt-get install -y curl git libpq-dev libsqlite3-dev libsasl2-dev postgresql-client postgresql postgresql-contrib sudo vim zlib1g-dev supervisor
+apt-get install -y curl git libpq-dev libsqlite3-dev libsasl2-dev postgresql-client sudo vim zlib1g-dev supervisor
+
+export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+apt-get update
+apt-get install -y google-cloud-sdk
+
 apt-get clean
 
 echo "\nDone installing dependencies...\n"

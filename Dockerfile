@@ -5,10 +5,9 @@ FROM stellar/base:latest
 # this dockerfile aren't intended to be used directly.  See testnet/Dockerfile
 # or pubnet/Dockerfile for details on how those images are built.
 
-MAINTAINER Bartek Nowotarski <bartek@stellar.org>
+MAINTAINER Oleg Tokarev <otokarev@gmail.com>
 
 ENV STELLAR_CORE_VERSION 0.6.3-391-708237b0
-ENV HORIZON_VERSION 0.11.0
 
 EXPOSE 5432
 EXPOSE 8000
@@ -24,7 +23,6 @@ RUN ["chmod", "+x", "install"]
 RUN /install
 
 RUN ["mkdir", "-p", "/opt/stellar"]
-RUN ["touch", "/opt/stellar/.docker-ephemeral"]
 
 RUN [ "adduser", \
   "--disabled-password", \
@@ -34,13 +32,18 @@ RUN [ "adduser", \
 
 RUN ["ln", "-s", "/opt/stellar", "/stellar"]
 RUN ["ln", "-s", "/opt/stellar/core/etc/stellar-core.cfg", "/stellar-core.cfg"]
-RUN ["ln", "-s", "/opt/stellar/horizon/etc/horizon.env", "/horizon.env"]
-ADD common /opt/stellar-default/common
-ADD pubnet /opt/stellar-default/pubnet
-ADD testnet /opt/stellar-default/testnet
+RUN ["ln", "-s", "/opt/stellar/core/buckets", "/buckets"]
+ADD core /opt/stellar/core
+ADD supervisor /opt/stellar/supervisor
+RUN chown -R stellar:stellar /opt/stellar/core
 
 
 ADD start /
 RUN ["chmod", "+x", "start"]
+
+ENV PROJECT=\
+    GS_ACCESS_KEY_ID=\
+    GS_SECRET_ACCESS_KEY=\
+    STELLAR_CORE_CFG_URL=
 
 ENTRYPOINT ["/init", "--", "/start" ]

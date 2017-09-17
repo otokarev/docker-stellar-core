@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+#!/bin/bash
+
+export CLOUDSDK_PYTHON=/usr/bin/python
+
+/usr/bin/gsutil $1 $2 $3
