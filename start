@@ -8,6 +8,11 @@ export GSUTIL="/usr/bin/gsutil"
 export GCLOUD="/usr/bin/gcloud"
 export STELLAR_USERNAME="stellar"
 export STELLAR_CORE_CFG="/opt/stellar/core/etc/stellar-core.cfg"
+export STELLAR_CMD="stellar-core --conf ${STELLAR_CORE_CFG}"
+
+function run_as_stellar() {
+    sudo -u ${STELLAR_USERNAME} -- sh -c "cd /opt/stellar/core/; $1"
+}
 
 echo ""
 echo "Starting Stellar"
@@ -34,24 +39,36 @@ if [ ! -z "${STELLAR_CORE_CFG_URL}" ]; then
 fi
 
 while [[ -n "$1" ]]; do
-  COMMAND="$1"
+  ARG="$1"
   shift
 
-  case "${COMMAND}" in
-  --fresh)
-    echo "Initializing database"
-    sudo -u ${STELLAR_USERNAME} -- sh -c "cd /opt/stellar/core/;
-        stellar-core --newdb --conf ${STELLAR_CORE_CFG} && stellar-core --newhist gcloud --conf ${STELLAR_CORE_CFG}" || true
+  case "${ARG}" in
+  --nonewdb)
+    NONEWDB=1
     ;;
-  --newhist)
-    sudo -u ${STELLAR_USERNAME} -- sh -c "cd /opt/stellar/core/;
-        stellar-core --newdb --conf ${STELLAR_CORE_CFG} && stellar-core --newhist gcloud" || true
+  --nonewhist)
+    NONEWHIST=1
     ;;
   *)
-    echo "Unknown container command $COMMAND" >&2
+    echo "Unknown container argument '$ARG'" >&2
     exit 1
   esac
 done
+
+if [ -z $NONEWHIST ]
+then
+    if [ -z "${ARCHIVE_NAME}" ]; then
+        echo "ERROR: Environment variable ARCHIVE_NAME is required!" && false
+    fi
+    echo "Initializing history archive"
+    run_as_stellar "${STELLAR_CMD} --newhist ${ARCHIVE_NAME}"
+fi
+
+if [ -z $NONEWDB ]
+then
+    echo "Initializing database"
+        run_as_stellar "${STELLAR_CMD} --newdb"
+fi
 
 echo "starting supervisor"
 exec supervisord -n -c $SUPHOME/etc/supervisord.conf

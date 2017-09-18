@@ -42,6 +42,9 @@ ADD start /
 RUN ["chmod", "+x", "start"]
 
 ENV PROJECT=\
+    NONEWDB=\
+    NONEWHIST=\
+    ARCHIVE_NAME=\
     GS_ACCESS_KEY_ID=\
     GS_SECRET_ACCESS_KEY=\
     STELLAR_CORE_CFG_URL=

@@ -10,9 +10,48 @@ The image uses the following software:
 - [stellar-core](https://github.com/stellar/stellar-core)
 - Supervisord is used from managing the processes of the services above.
 
-## Usage
+## Build
+Run from the root directory of the project:
+```text
+docker build -t umbrellab/stellar-core-simplified:version0.1 .
+```
 
-TODO
+## Container deployment
+```text
+docker run --name stellar-core-simplified \
+    # required
+    --env ARCHIVE_NAME=gcloud \
+    # required
+    --env PROJECT=YOUR_GOOGLE_PROJECT \
+    # required
+    --env GS_ACCESS_KEY_ID=YOUR_GOOGLE_SERVICE_ACCESS_KEY_ID \
+    # required
+    --env GS_SECRET_ACCESS_KEY=YOUR_GOOGLE_SERVICE_SECRET_KEY \
+    # optional
+    --env STELLAR_CORE_CFG_URL=STELLAR_CONFIG_INTERNET_ADDRESS \
+    # optional
+    --env NONEWDB=1 \
+    # optional
+    --env NONEWHIST=1 \
+    -it umbrellab/stellar-core-simplified:version0.1
+```
+if you do not want re-initialize a history archive storage pass an environment variable `--env NONEWHIST=1`
+
+## How to 'put' archives to Google Storage
+
+In `stellar-core.cfg` add:
+```text
+[HISTORY.gcloud]
+get="/bin/bash /stellar/core/bin/gsutil cp gs://stellar-history-archives/{0} {1}"
+put="/bin/bash /stellar/core/bin/gsutil cp {0} gs://stellar-history-archives/{1}"
+```
+Change `stellar-history-archives` for something suitable for you. `gcloud` can also be renamed.
+
+Launch a container (`docker run`) with following flags:
+```text
+--env ARCHIVE_NAME=gcloud \
+--env STELLAR_CORE_CFG_URL="https://...../stellar-core.cfg" \
+```
 
 ### Configurations files
 
