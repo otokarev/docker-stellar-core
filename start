@@ -33,7 +33,7 @@ sudo -u ${STELLAR_USERNAME} ${GCLOUD} config set project ${PROJECT}
 echo "...Gsutil has been configured."
 
 if [ ! -z "${STELLAR_CORE_CFG_URL}" ]; then
-    ( curl -sSf "${STELLAR_CORE_CFG_URL}" -o ${STELLAR_CORE_CFG} \
+    ( curl -sSfL "${STELLAR_CORE_CFG_URL}" -o ${STELLAR_CORE_CFG} \
         && chown ${STELLAR_USERNAME}:${STELLAR_USERNAME} ${STELLAR_CORE_CFG} ) \
         || { echo "ERROR: Cannot download content of ${STELLAR_CORE_CFG} from URL ${STELLAR_CORE_CFG_URL}"; exit 1; }
 fi
