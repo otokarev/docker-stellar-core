@@ -35,6 +35,8 @@ docker run --name stellar-core-simplified \
     --env NONEWDB=1 \
     # optional
     --env NONEWHIST=1 \
+    # required if stellar-core.cfg contains __DATABASE_URL__ 
+    --env DATABASE_URL="postgres://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=disable" (or "postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable")
     -it umbrellab/stellar-core-simplified:version0.1
 ```
 if you do not want re-initialize a history archive storage pass an environment variable `--env NONEWHIST=1`
@@ -53,6 +55,20 @@ Launch a container (`docker run`) with following flags:
 ```text
 --env ARCHIVE_NAME=gcloud \
 --env STELLAR_CORE_CFG_URL="https://...../stellar-core.cfg" \
+```
+
+## How to set DATABASE configuration parameter thru env parameter
+Add in stellar-core.cfg
+```
+DATABASE="__DATABASE_URL__"
+```
+Launch container with
+```
+--env DATABASE_URL="postgres://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=disable"
+```
+or 
+```
+--env DATABASE_URL="postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable"
 ```
 
 ### Configurations files

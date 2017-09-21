@@ -32,11 +32,27 @@ sudo -u ${STELLAR_USERNAME} ${GCLOUD} config set project ${PROJECT}
 
 echo "...Gsutil has been configured."
 
+echo "Loading configuration file..."
 if [ ! -z "${STELLAR_CORE_CFG_URL}" ]; then
     ( curl -sSfL "${STELLAR_CORE_CFG_URL}" -o ${STELLAR_CORE_CFG} \
         && chown ${STELLAR_USERNAME}:${STELLAR_USERNAME} ${STELLAR_CORE_CFG} ) \
         || { echo "ERROR: Cannot download content of ${STELLAR_CORE_CFG} from URL ${STELLAR_CORE_CFG_URL}"; exit 1; }
+
+    if [ -z "${DATABASE_URL}" ] && grep __DATABASE_URL__ ${STELLAR_CORE_CFG} > /dev/null
+    then
+        echo "ERROR: Environment variable DATABASE_URL is required" && false;
+    else
+        # Horizon uses format postgres://host:port/dbname?param=value and stellar core uses postgresql://dbname=... port=.. host=..
+        # following regexp convert horizon style to stellar style
+        DATABASE_URL=`echo ${DATABASE_URL} \
+            | sed -r 's|postgres://([^:]{1,})(:([^@]+)){0,1}@([^:/]{1,})(:([^/]{1,})){0,1}/([^?]{1,})(\?(.{1,})).*$|postgresql://user=\1 password=\3 host=\4 port=\5 dbname=\7 \9|' \
+            | sed -r 's#(/| )[^/ ]{1,}=( |$)#\1\2#'`
+        sed -i "s|__DATABASE_URL__|${DATABASE_URL}|" ${STELLAR_CORE_CFG}
+    fi
+
+
 fi
+echo "...configuration file loaded"
 
 while [[ -n "$1" ]]; do
   ARG="$1"
