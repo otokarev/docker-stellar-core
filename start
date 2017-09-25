@@ -6,6 +6,7 @@ export GSUTIL="/usr/bin/gsutil"
 export GCLOUD="/usr/bin/gcloud"
 export STELLAR_CORE_CFG="/stellar-core.cfg"
 export STELLAR_CMD="stellar-core --conf ${STELLAR_CORE_CFG}"
+export GCLOUD_STORAGE_CREDENTIALS="/secrets/gcloud/storage/credentials.json"
 
 echo ""
 echo "Starting Stellar"
@@ -13,15 +14,7 @@ echo ""
 
 echo "Setting Gsutil credentials..."
 
-for var in PROJECT GS_ACCESS_KEY_ID GS_SECRET_ACCESS_KEY;
-do
-    if [ -z "${!var}" ]; then
-        echo "ERROR: Environment variable ${var} is required!" && false
-    fi
-done
-
-echo -e "${GS_ACCESS_KEY_ID}\n${GS_SECRET_ACCESS_KEY}\n" | ${GSUTIL} config -a
-${GCLOUD} config set project ${PROJECT}
+gcloud auth activate-service-account --key-file="${GCLOUD_STORAGE_CREDENTIALS}"
 
 echo "...Gsutil has been configured."
 

@@ -23,12 +23,6 @@ docker build -t umbrellab/stellar-core-simplified:version0.1 .
 docker run --name stellar-core-simplified \
     # required
     --env ARCHIVE_NAME=gcloud \
-    # required
-    --env PROJECT=YOUR_GOOGLE_PROJECT \
-    # required
-    --env GS_ACCESS_KEY_ID=YOUR_GOOGLE_SERVICE_ACCESS_KEY_ID \
-    # required
-    --env GS_SECRET_ACCESS_KEY=YOUR_GOOGLE_SERVICE_SECRET_KEY \
     # optional
     --env STELLAR_CORE_CFG_URL=STELLAR_CONFIG_INTERNET_ADDRESS \
     # optional
@@ -37,6 +31,10 @@ docker run --name stellar-core-simplified \
     --env NONEWHIST=1 \
     # required if stellar-core.cfg contains __DATABASE_URL__ 
     --env DATABASE_URL="postgres://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=disable" (or "postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable")
+    # required. 
+    # Mount a directory with a service account key file.
+    # The account must have access to Google Cloud Storage to store archives there.
+    -v <directory with `credentilas.json`>:/secrets/gcloud/storage
     -it umbrellab/stellar-core-simplified:version0.1
 ```
 if you do not want re-initialize a history archive storage pass an environment variable `--env NONEWHIST=1`
@@ -46,8 +44,8 @@ if you do not want re-initialize a history archive storage pass an environment v
 In `stellar-core.cfg` add:
 ```text
 [HISTORY.gcloud]
-get="/bin/bash /stellar/core/bin/gsutil cp gs://stellar-history-archives/{0} {1}"
-put="/bin/bash /stellar/core/bin/gsutil cp {0} gs://stellar-history-archives/{1}"
+get="/bin/bash /gsutil cp gs://stellar-history-archives/{0} {1}"
+put="/bin/bash /gsutil cp {0} gs://stellar-history-archives/{1}"
 ```
 Change `stellar-history-archives` for something suitable for you. `gcloud` can also be renamed.
 

@@ -14,6 +14,8 @@ EXPOSE 11626
 
 RUN mkdir /data
 VOLUME /data
+RUN mkdir -p /secrets/gcloud/storage
+VOLUME /secrets/gcloud/storage
 
 ADD dependencies /
 RUN sh /dependencies
