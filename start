@@ -2,17 +2,10 @@
 
 set -e
 
-export STELLAR_HOME="/opt/stellar"
-export SUPHOME="$STELLAR_HOME/supervisor"
 export GSUTIL="/usr/bin/gsutil"
 export GCLOUD="/usr/bin/gcloud"
-export STELLAR_USERNAME="stellar"
-export STELLAR_CORE_CFG="/opt/stellar/core/etc/stellar-core.cfg"
+export STELLAR_CORE_CFG="/stellar-core.cfg"
 export STELLAR_CMD="stellar-core --conf ${STELLAR_CORE_CFG}"
-
-function run_as_stellar() {
-    sudo -u ${STELLAR_USERNAME} -- sh -c "cd /opt/stellar/core/; $1"
-}
 
 echo ""
 echo "Starting Stellar"
@@ -27,15 +20,14 @@ do
     fi
 done
 
-echo -e "${GS_ACCESS_KEY_ID}\n${GS_SECRET_ACCESS_KEY}\n" | sudo -u ${STELLAR_USERNAME} ${GSUTIL} config -a
-sudo -u ${STELLAR_USERNAME} ${GCLOUD} config set project ${PROJECT}
+echo -e "${GS_ACCESS_KEY_ID}\n${GS_SECRET_ACCESS_KEY}\n" | ${GSUTIL} config -a
+${GCLOUD} config set project ${PROJECT}
 
 echo "...Gsutil has been configured."
 
 echo "Loading configuration file..."
 if [ ! -z "${STELLAR_CORE_CFG_URL}" ]; then
-    ( curl -sSfL "${STELLAR_CORE_CFG_URL}" -o ${STELLAR_CORE_CFG} \
-        && chown ${STELLAR_USERNAME}:${STELLAR_USERNAME} ${STELLAR_CORE_CFG} ) \
+    curl -sSfL "${STELLAR_CORE_CFG_URL}" -o ${STELLAR_CORE_CFG} \
         || { echo "ERROR: Cannot download content of ${STELLAR_CORE_CFG} from URL ${STELLAR_CORE_CFG_URL}"; exit 1; }
 
     if [ -z "${DATABASE_URL}" ] && grep __DATABASE_URL__ ${STELLAR_CORE_CFG} > /dev/null
@@ -45,13 +37,12 @@ if [ ! -z "${STELLAR_CORE_CFG_URL}" ]; then
         # Horizon uses format postgres://host:port/dbname?param=value and stellar core uses postgresql://dbname=... port=.. host=..
         # following regexp convert horizon style to stellar style
         DATABASE_URL=`echo ${DATABASE_URL} \
-            | sed -r 's|postgres://([^:]{1,})(:([^@]+)){0,1}@([^:/]{1,})(:([^/]{1,})){0,1}/([^?]{1,})(\?(.{1,})).*$|postgresql://user=\1 password=\3 host=\4 port=\5 dbname=\7 \9|' \
-            | sed -r 's#(/| )[^/ ]{1,}=( |$)#\1\2#'`
+            | sed -r 's|postgres://([^:]+)(:([^@]+))?@([^:/]+)(:([^/]+))?/([^?]+)(\?(.+)).*$|postgresql://user=\1 password=\3 host=\4 port=\6 dbname=\7 \9|' \
+            | sed -r 's#(/| )[^/ ]+=( |$)#\1\2#'`
         sed -i "s|__DATABASE_URL__|${DATABASE_URL}|" ${STELLAR_CORE_CFG}
     fi
-
-
 fi
+
 echo "...configuration file loaded"
 
 while [[ -n "$1" ]]; do
@@ -77,15 +68,13 @@ then
         echo "ERROR: Environment variable ARCHIVE_NAME is required!" && false
     fi
     echo "Initializing history archive"
-    run_as_stellar "${STELLAR_CMD} --newhist ${ARCHIVE_NAME}"
+    ${STELLAR_CMD} --newhist ${ARCHIVE_NAME}
 fi
 
 if [ -z $NONEWDB ]
 then
     echo "Initializing database"
-        run_as_stellar "${STELLAR_CMD} --newdb"
+    ${STELLAR_CMD} --newdb
 fi
 
-echo "starting supervisor"
-exec supervisord -n -c $SUPHOME/etc/supervisord.conf
-
+${STELLAR_CMD}

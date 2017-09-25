@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# TODO: wait for postgres
-
-exec /usr/local/bin/stellar-core --conf "/opt/stellar/core/etc/stellar-core.cfg"
