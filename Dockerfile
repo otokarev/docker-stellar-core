@@ -30,12 +30,9 @@ RUN sh /install
 
 ADD start /
 
-ENV PROJECT=\
-    NONEWDB=\
+ENV NONEWDB=\
     NONEWHIST=\
     ARCHIVE_NAME=\
-    GS_ACCESS_KEY_ID=\
-    GS_SECRET_ACCESS_KEY=\
     STELLAR_CORE_CFG_URL=
 
 ENTRYPOINT ["/bin/bash", "/start"]
