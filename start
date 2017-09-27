@@ -38,27 +38,10 @@ fi
 
 echo "...configuration file loaded"
 
-while [[ -n "$1" ]]; do
-  ARG="$1"
-  shift
-
-  case "${ARG}" in
-  --nonewdb)
-    NONEWDB=1
-    ;;
-  --nonewhist)
-    NONEWHIST=1
-    ;;
-  *)
-    echo "Unknown container argument '$ARG'" >&2
-    exit 1
-  esac
-done
-
 if [ -z $NONEWHIST ]
 then
     if [ -z "${ARCHIVE_NAME}" ]; then
-        echo "ERROR: Environment variable ARCHIVE_NAME is required!" && false
+        echo "ERROR: Environment variable ARCHIVE_NAME is required!" >&2  && false
     fi
     echo "Initializing history archive"
     ${STELLAR_CMD} --newhist ${ARCHIVE_NAME}
@@ -67,7 +50,9 @@ fi
 if [ -z $NONEWDB ]
 then
     echo "Initializing database"
+    rm -rf /data/buckets
     ${STELLAR_CMD} --newdb
 fi
 
+echo "Starting Stellar node"
 ${STELLAR_CMD}
