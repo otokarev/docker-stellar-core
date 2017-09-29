@@ -31,6 +31,8 @@ docker run --name stellar-core-simplified \
     --env NONEWHIST=1 \
     # required if stellar-core.cfg contains __DATABASE_URL__ 
     --env DATABASE_URL="postgres://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=disable" (or "postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable")
+    # required if stellar-core.cfg contains __GS_BUCKET_ARCHIVES_PATH__ 
+    --env GS_BUCKET_ARCHIVES_PATH="gs://BUCKET/PATH"
     # required. 
     # Mount a directory with a service account key file.
     # The account must have access to Google Cloud Storage to store archives there.
