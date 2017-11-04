@@ -33,10 +33,13 @@ docker run --name stellar-core-simplified \
     --env DATABASE_URL="postgres://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=disable" (or "postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable")
     # required if stellar-core.cfg contains __GS_BUCKET_ARCHIVES_PATH__ 
     --env GS_BUCKET_ARCHIVES_PATH="gs://BUCKET/PATH"
-    # required. 
+    # required if NONEWHIST is undefined. 
     # Mount a directory with a service account key file.
     # The account must have access to Google Cloud Storage to store archives there.
     -v <directory with `credentilas.json`>:/secrets/gcloud/storage
+    # optional
+    # Mount a directory with stellar-core.cfg
+    -v <directory with `stellar-core.cfg`>:/configs
     -it umbrellab/stellar-core-simplified:version0.1
 ```
 if you do not want re-initialize a history archive storage pass an environment variable `--env NONEWHIST=1`
@@ -73,17 +76,11 @@ or
 
 ### Configurations files
 
-The default configurations will be copied into the data directory upon launching a persistent mode container for the first time.  Use the diagram below to learn about the various configuration files.
+```text
+/configs/stellar-core.cfg
+```
 
-```
-  /opt/stellar
-  |-- core                  
-  |   `-- etc
-  |       `-- stellar-core.cfg  # Stellar core config
-  `-- supervisor
-      `-- etc
-  |       `-- supervisord.conf  # Supervisord root configuration
-```
+This configuration file can be overridden by mounting volume to `/configs` with different one.
 
 
 ## Regarding user accounts
@@ -107,29 +104,4 @@ $ docker exec -it stellar /bin/bash
 ```
 
 The command above assumes that you launched your container with the name `stellar`; Replace that name with whatever you chose if different.  When run, it will open an interactive shell running as root within the container.
-
-### Restarting services
-
-Services within the quickstart container are managed using [supervisord](http://supervisord.org/index.html) and we recommend you use supervisor's shell to interact with running services.  To launch the supervisor shell, open an interactive shell to the container and then run `supervisorctl`.  You should then see a command prompt that looks like:
-
-```shell
-stellar-core                     RUNNING    pid 125, uptime 0:01:13
-supervisor>
-```
-
-From this prompt you can execute any of the supervisord commands:  
-
-```shell
-# stop stellar-core
-supervisor> stop stellar-core  
-```
-
-You can learn more about what commands are available by using the `help` command.
-
-### Viewing logs
-
-Logs can be found within the container at the path `/var/log/supervisor/`.  A file is kept for both the stdout and stderr of the processes managed by supervisord.  Additionally, you can use the `tail` command provided by supervisorctl.
-
-## Example launch commands
-
 

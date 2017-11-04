@@ -22,8 +22,8 @@ RUN sh /dependencies
 
 ADD gsutil /gsutil
 
-# Default config for testnet
-ADD stellar-core.cfg /stellar-core.cfg
+ADD configs /configs
+VOLUME /configs
 
 ADD install /
 RUN sh /install
