@@ -1,6 +1,6 @@
 FROM phusion/baseimage:latest as builder
 
-ENV  STELLAR_CORE_VERSION=0.6.4-442-be645dff
+ENV  STELLAR_CORE_VERSION=9.0.1-490-4aa79d45
 
 RUN apt update \
     && apt-get install -y curl \
