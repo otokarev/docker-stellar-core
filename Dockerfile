@@ -8,8 +8,9 @@ ADD Makefile.am.patch /
 
 RUN mkdir -p /go/src/github.com/stellar/ \
     && apk add --no-cache git make g++ postgresql-dev autoconf automake libtool bison flex musl-dev linux-headers \
-    && git clone --branch=$STELLAR_CORE_VERSION https://github.com/stellar/stellar-core.git \
+    && git clone https://github.com/stellar/stellar-core.git \
     && cd stellar-core \
+    && git checkout $STELLAR_CORE_VERSION \
     && git submodule update --init --recursive \
     && git apply /Makefile.am.patch \
     && ./autogen.sh \
