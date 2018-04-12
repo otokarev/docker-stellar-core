@@ -1,19 +1,25 @@
-FROM phusion/baseimage:latest as builder
+FROM alpine:latest as builder
 
-ENV  STELLAR_CORE_VERSION=9.0.1-490-4aa79d45
+ENV  STELLAR_CORE_VERSION=v9.2.0
 
-RUN apt update \
-    && apt-get install -y curl \
-    && export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" \
-    && echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+# Remove docs' block to get rid off pandoc problems
+ADD Makefile.am.patch /
 
-RUN apt update \
-    && apt-get install -y libpq-dev libsqlite3-dev google-cloud-sdk \
-    && curl -s -o stellar-core.deb https://s3.amazonaws.com/stellar.org/releases/stellar-core/stellar-core-${STELLAR_CORE_VERSION}_amd64.deb \
-    && apt-get install -y ./stellar-core.deb \
-    && apt-get clean \
-    && rm -rf stellar-core.deb /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN mkdir -p /go/src/github.com/stellar/ \
+    && apk add --no-cache git make g++ postgresql-dev autoconf automake libtool bison flex musl-dev linux-headers \
+    && git clone --branch=$STELLAR_CORE_VERSION https://github.com/stellar/stellar-core.git \
+    && cd stellar-core \
+    && git submodule update --init --recursive \
+    && git apply /Makefile.am.patch \
+    && ./autogen.sh \
+    && ./configure \
+    && make \
+    && make install
+
+FROM google/cloud-sdk:alpine
+
+RUN apk add --no-cache libpq libstdc++ libgcc
+COPY --from=builder /usr/local/bin/stellar-core /usr/local/bin/stellar-core
 
 EXPOSE 11625
 EXPOSE 11626
