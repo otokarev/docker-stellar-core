@@ -1,6 +1,7 @@
 FROM alpine:latest as builder
 
-ENV  STELLAR_CORE_VERSION=v9.2.0
+# Snapshot on 12.04.18 at 6:20
+ENV  STELLAR_CORE_VERSION=45375e19c1b194acb8a06018e6be957ab122b970
 
 # Remove docs' block to get rid off pandoc problems
 ADD Makefile.am.patch /
