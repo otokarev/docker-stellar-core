@@ -26,6 +26,7 @@ COPY --from=builder /usr/local/bin/stellar-core /usr/local/bin/stellar-core
 EXPOSE 11625
 EXPOSE 11626
 
+
 RUN mkdir /data
 VOLUME /data
 RUN mkdir -p /secrets/gcloud/storage
@@ -38,7 +39,10 @@ VOLUME /configs
 
 ADD start /
 
-ENV NONEWDB=\
+ENV \
+    STELLAR_CORE_CFG="/configs/stellar-core.cfg" \
+    GCLOUD_STORAGE_CREDENTIALS="/secrets/gcloud/storage/credentials.json"\
+    NONEWDB=\
     NONEWHIST=\
     ARCHIVE_NAME=\
     STELLAR_CORE_CFG_URL=

@@ -4,15 +4,11 @@ set -e
 
 export GSUTIL="/usr/bin/gsutil"
 export GCLOUD="/usr/bin/gcloud"
-export STELLAR_CORE_CFG="/stellar-core.cfg"
 export STELLAR_CMD="stellar-core --conf ${STELLAR_CORE_CFG}"
-export GCLOUD_STORAGE_CREDENTIALS="/secrets/gcloud/storage/credentials.json"
 
 echo ""
 echo "Starting Stellar"
 echo ""
-
-cp /configs/stellar-core.cfg /;
 
 if [ ! -z "${STELLAR_CORE_CFG_URL}" ]; then
     echo "Loading configuration file (${STELLAR_CORE_CFG_URL})..."

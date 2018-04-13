@@ -1,10 +1,9 @@
 # Stellar Core Docker Image
 
 This docker image does:
-- upload `stellar-core.cfg` from URL specified at the container launch time
 - and run Stellar core node process
 - have no database engine onboard (database credentials must be specified in the `stellar-core.cfg`)
-- put history archives to Google Storage
+- can put history archives to Google Storage
 
 The image uses the following software:
 
@@ -24,7 +23,9 @@ docker run --name stellar-core-simplified \
     # required
     --env ARCHIVE_NAME=gcloud \
     # optional
-    --env STELLAR_CORE_CFG_URL=STELLAR_CONFIG_INTERNET_ADDRESS \
+    --env STELLAR_CORE_CFG_URL=<url to file with the config> \
+    # optional
+    --env STELLAR_CORE_CFG=<path to the config accessible from inside of container> \
     # optional
     --env NONEWDB=1 \
     # optional
@@ -75,12 +76,11 @@ or
 ```
 
 ### Configurations files
+* Default config file place is `/configs/stellar-core.cfg`
+* This configuration file can be overridden by mounting volume to `/configs` with different one.
+* Or `STELLAR_CORE_CFG_URL` variable pointing to the file in the Internet can be set.
+* Or `STELLAR_CORE_CFG` variable pointing to the local file residing inside of container can be set.
 
-```text
-/configs/stellar-core.cfg
-```
-
-This configuration file can be overridden by mounting volume to `/configs` with different one.
 
 
 ## Regarding user accounts
