@@ -32,6 +32,8 @@ docker run --name stellar-core-simplified \
     --env NONEWHIST=1 \
     # required if stellar-core.cfg contains __DATABASE_URL__ 
     --env DATABASE_URL="postgres://USER:PASSWORD@HOST:PORT/DBNAME?sslmode=disable" (or "postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable")
+    # required if stellar-core.cfg contains  __BUCKET_DIR_PATH__
+    --env __BUCKET_DIR_PATH__=<path to buckets/ directory> (e.g.: /data/buckets)
     # required if stellar-core.cfg contains __GS_BUCKET_ARCHIVES_PATH__ 
     --env GS_BUCKET_ARCHIVES_PATH="gs://BUCKET/PATH"
     # required if NONEWHIST is undefined. 
@@ -75,7 +77,7 @@ or
 --env DATABASE_URL="postgresql://dbname=DBNAME user=USER port=PORT password=PASSWORD sslmode=disable"
 ```
 
-### Configurations files
+### Configuration files
 * Default config file place is `/configs/stellar-core.cfg`
 * This configuration file can be overridden by mounting volume to `/configs` with different one.
 * Or `STELLAR_CORE_CFG_URL` variable pointing to the file in the Internet can be set.

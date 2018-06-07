@@ -60,6 +60,22 @@ else
     fi
 fi
 
+if [ -z "${BUCKET_DIR_PATH}" ]
+then
+    if grep __BUCKET_DIR_PATH__ ${STELLAR_CORE_CFG} > /dev/null
+    then
+        echo "ERROR: Environment variable BUCKET_DIR_PATH is required" && false
+    fi
+else
+    if ! grep __BUCKET_DIR_PATH__ ${STELLAR_CORE_CFG} > /dev/null
+    then
+        echo "ERROR: no '__BUCKET_DIR_PATH__' placeholder in stellar-core.cfg" && false
+    else
+        sed -i "s|__BUCKET_DIR_PATH__|${BUCKET_DIR_PATH}|" ${STELLAR_CORE_CFG}
+        echo "BUCKET_DIR_PATH='${BUCKET_DIR_PATH}' substituted."
+    fi
+fi
+
 echo "...configuration file loaded"
 
 if [ -z $NONEWHIST ]

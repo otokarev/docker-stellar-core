@@ -45,6 +45,7 @@ ENV \
     NONEWDB=\
     NONEWHIST=\
     ARCHIVE_NAME=\
+    BUCKET_DIR_PATH=\
     STELLAR_CORE_CFG_URL=
 
 ENTRYPOINT ["/bin/bash", "/start"]
