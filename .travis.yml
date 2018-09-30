@@ -10,8 +10,8 @@ before_script:
 - sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$VERSION'/' Dockerfile Dockerfile.extra
 - docker pull "$IMAGE_NAME" || true
 script:
-- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
-- docker build --pull --cache-from "$IMAGE_NAME" --tag "${IMAGE_NAME}:extra" .
+- travis_wait 120 docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
+- travis_wait 120 docker build --pull --cache-from "$IMAGE_NAME" --tag "${IMAGE_NAME}:extra" .
 
 after_script:
 - docker images
