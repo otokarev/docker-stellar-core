@@ -11,7 +11,6 @@ before_script:
 - docker pull "$IMAGE_NAME" || true
 script:
 - travis_wait 120 docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
-- travis_wait 120 docker build --pull --cache-from "$IMAGE_NAME" --tag "${IMAGE_NAME}:extra" .
 
 after_script:
 - docker images
@@ -20,10 +19,8 @@ before_deploy:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
 - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${version}"
-- docker tag "${IMAGE_NAME}:extra" "${IMAGE_NAME}:latest-extra"
-- docker tag "${IMAGE_NAME}:extra" "${IMAGE_NAME}:${version}-extra"
 deploy:
   provider: script
-  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${version}" && docker push "${IMAGE_NAME}:${version}-extra" && docker push "${IMAGE_NAME}:latest-extra"
+  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${version}"
   on:
     branch: master
