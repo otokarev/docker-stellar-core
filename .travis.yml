@@ -23,4 +23,7 @@ deploy:
   provider: script
   script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${version}"
   on:
-    branch: master
+    branches:
+      only:
+      - master
+      - bare
