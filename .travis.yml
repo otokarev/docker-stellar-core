@@ -4,24 +4,21 @@ services:
 env:
   global:
   - IMAGE_NAME=otokarev/stellar-core
-  - VERSION=v10.0.0
 
 before_script:
-- sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$VERSION'/' Dockerfile Dockerfile.extra
+- APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
+- APP_VERSION=${TRAVIS_TAG%-${APP_VARIANT}};
+- APP_VERSION=${APP_VERSION} && [[ $APP_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || APP_VERSION=""
+- [ -z "$APP_VERSION" ] && APP_VARIANT=""
+- APP_DOCKERFILE=Dockerfile && [[ -n $APP_VARIANT ]] && APP_DOCKERFILE="Dockerfile.${APP_VARIANT}"
+- [ -n "$APP_VERSION" ] && sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$APP_VERSION'/' $APP_DOCKERFILE
 - docker pull "$IMAGE_NAME" || true
+
 script:
-- travis_wait 120 docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
+- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
 
 after_script:
-- docker images
-
-before_deploy:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
-- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${VERSION}"
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${VERSION}"
-  on:
-    all_branches: true
+- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
+- [ -n $APP_VARIANT ] && docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${APP_VARIANT}" && docker push "${IMAGE_NAME}:${APP_VARIANT}"
+- [ -n $APP_VERSION ] && docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:latest"
