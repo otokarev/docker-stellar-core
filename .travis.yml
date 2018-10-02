@@ -19,10 +19,10 @@ before_script:
 - APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
 - APP_VERSION=${TRAVIS_TAG%-${APP_VARIANT}};
 - APP_VERSION=${APP_VERSION} && [[ $APP_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || APP_VERSION=""
-#- [ -z "$APP_VERSION" ] && APP_VARIANT=""
-#- APP_DOCKERFILE=Dockerfile && [[ -n $APP_VARIANT ]] && APP_DOCKERFILE="Dockerfile.${APP_VARIANT}"
-#- [ -n "$APP_VERSION" ] && sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$APP_VERSION'/' $APP_DOCKERFILE
-#- docker pull "$IMAGE_NAME" || true
+- [ -z "$APP_VERSION" ] && APP_VARIANT=""
+- APP_DOCKERFILE=Dockerfile && [[ -n $APP_VARIANT ]] && APP_DOCKERFILE="Dockerfile.${APP_VARIANT}"
+- [ -n "$APP_VERSION" ] && sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$APP_VERSION'/' $APP_DOCKERFILE
+- docker pull "$IMAGE_NAME" || true
 #
 #script:
 #- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
