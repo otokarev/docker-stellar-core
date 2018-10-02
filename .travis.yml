@@ -15,9 +15,6 @@ before_script:
 - if [[ -n "$APP_VERSION" ]]; then sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$APP_VERSION'/' $APP_DOCKERFILE; fi
 - docker pull "$IMAGE_NAME" || true
 script:
-- echo $APP_VERSION
-- echo $APP_DOCKERFILE
-- echo $APP_VARIANT
 - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
 after_script:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
