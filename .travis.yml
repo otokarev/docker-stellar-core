@@ -9,6 +9,8 @@ env:
 
 branches:
   only:
+  - master
+  - bare
   - /^v.*$/
 
 before_script:
