@@ -1,5 +1,4 @@
 sudo: required
-
 services:
 - docker
 
@@ -13,21 +12,5 @@ branches:
   - bare
   - /^v.*$/
 
-before_script:
-- if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
-- APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
-- APP_VERSION=${TRAVIS_TAG%-${APP_VARIANT}};
-- APP_VERSION=${APP_VERSION} && [[ $APP_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || APP_VERSION=""
-- [ -z "$APP_VERSION" ] && APP_VARIANT=""
-- APP_DOCKERFILE=Dockerfile && [[ -n $APP_VARIANT ]] && APP_DOCKERFILE="Dockerfile.${APP_VARIANT}"
-- [ -n "$APP_VERSION" ] && sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$APP_VERSION'/' $APP_DOCKERFILE
-- docker pull "$IMAGE_NAME" || true
-
 script:
-- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
-
-after_script:
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
-- [ -n $APP_VARIANT ] && docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${APP_VARIANT}" && docker push "${IMAGE_NAME}:${APP_VARIANT}"
-- [ -n $APP_VERSION ] && docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:latest"
+- echo "ko"
