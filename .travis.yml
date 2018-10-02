@@ -6,6 +6,8 @@ env:
   - IMAGE_NAME=otokarev/stellar-core
 branches:
   only:
+  - master
+  - bare
   - /^v.*$/
 before_script:
 - if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
