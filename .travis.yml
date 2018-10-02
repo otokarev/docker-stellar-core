@@ -4,8 +4,11 @@ services:
 env:
   global:
   - IMAGE_NAME=otokarev/stellar-core
-
+branches:
+  only:
+  - /^v.*$/
 before_script:
+- if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
 - APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
 - APP_VERSION=${TRAVIS_TAG%-${APP_VARIANT}};
 - APP_VERSION=${APP_VERSION} && [[ $APP_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || APP_VERSION=""
