@@ -16,8 +16,7 @@ script:
 - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
 before_script:
 - if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
-- echo kO
-#- APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
+- APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
 #- APP_VERSION=${TRAVIS_TAG%-${APP_VARIANT}};
 #- APP_VERSION=${APP_VERSION} && [[ $APP_VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || APP_VERSION=""
 #- [ -z "$APP_VERSION" ] && APP_VARIANT=""
