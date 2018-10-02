@@ -1,12 +1,16 @@
 sudo: required
+
 services:
 - docker
+
 env:
   global:
   - IMAGE_NAME=otokarev/stellar-core
+
 branches:
   only:
   - /^v.*$/
+
 before_script:
 - if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
 - APP_VARIANT=${TRAVIS_TAG#*-} && [[ ${APP_VARIANT} = ${TRAVIS_TAG} ]] && APP_VARIANT="";
