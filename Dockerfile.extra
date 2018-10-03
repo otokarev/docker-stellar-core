@@ -17,9 +17,10 @@ RUN mkdir -p /go/src/github.com/stellar/ \
     && make \
     && make install
 
-FROM alpine:latest
+FROM google/cloud-sdk:alpine
 
 RUN apk add --no-cache \
+    curl \
     libpq \
     libstdc++ \
     libgcc

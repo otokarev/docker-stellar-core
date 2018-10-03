@@ -1,0 +1,23 @@
+sudo: required
+services:
+- docker
+env:
+  global:
+  - IMAGE_NAME=otokarev/stellar-core
+branches:
+  only:
+  - master
+  - bare
+  - /^v.*$/
+before_script:
+- if [ -z "$TRAVIS_TAG" ]; then exit 0; fi
+- source .travis/env.sh;
+- if [[ -n "$APP_VERSION" ]]; then sed -i 's/^ENV\s*STELLAR_CORE_VERSION.*$/ENV STELLAR_CORE_VERSION='$APP_VERSION'/' $APP_DOCKERFILE; fi
+- docker pull "$IMAGE_NAME" || true
+script:
+- docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" -f $APP_DOCKERFILE .
+after_script:
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_TAG}" && docker push "${IMAGE_NAME}:${TRAVIS_TAG}"
+- if [[ -n $APP_VARIANT ]]; then docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${APP_VARIANT}" && docker push "${IMAGE_NAME}:${APP_VARIANT}"; fi
+- if [[ -n $APP_VERSION ]] && [[ -z $APP_VARIANT ]]; then docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:latest"; fi
