@@ -87,14 +87,6 @@ spec:
           - name: stellar-core-history-data
             mountPath: "/history"
           env:
-            - name: NONEWHIST
-              value: "1"
-            - name: ARCHIVE_NAME
-              value: "h1"
-            - name: DATABASE_URL
-              value: postgres://core:1q2w3e@127.0.0.1:5432/core?sslmode=disable
-            - name: BUCKET_DIR_PATH
-              value: /data/buckets
             - name: NODE_SEED
               valueFrom:
                 secretKeyRef:
