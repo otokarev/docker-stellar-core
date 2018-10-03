@@ -65,22 +65,6 @@ spec:
               exec /usr/local/bin/stellar-core --newhist local
               fi
               exec /usr/local/bin/stellar-core
-          livenessProbe:
-            tcpSocket:
-              port: 11626
-            initialDelaySeconds: 20
-            periodSeconds: 3
-          readinessProbe:
-            exec:
-              command:
-                - "/bin/bash"
-                - "-c"
-                - |
-                  T=`/usr/local/bin/stellar-core --c info | egrep '[[:blank:]]+"age" : [[:digit:]]+,'` \
-                  && [[ $T =~ [[:blank:]]([[:digit:]]+), ]] \
-                  && [[ "${BASH_REMATCH[1]}" -lt "10" ]]
-            initialDelaySeconds: 20
-            periodSeconds: 10
           volumeMounts:
           - name: stellar-core-cfg
             mountPath: /configs
