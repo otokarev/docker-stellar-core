@@ -7,6 +7,9 @@
 
 Alpine-based image with `stellar-core` binary inside
 
+**NOTE:**
+- Images tagged with **extra** like **v0.10.0-extra** contain `curl` and `gcloud` executables also.
+
 ## Base usage example
 
 ```yaml
